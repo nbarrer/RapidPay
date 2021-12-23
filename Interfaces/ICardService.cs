@@ -8,7 +8,7 @@ namespace RapidPayAPI.Interfaces
     {
         Task<Card> Create(CardModel newCard);
         Task<Card> Pay(string cardNumber, double amount);
-        bool Delete(string cardNumber);
-        double? GetBalance(string cardNumber);
+        Task<Card> Delete(string cardNumber);
+        Task<double?> GetBalance(string cardNumber);
     }
 }

@@ -54,9 +54,14 @@ namespace RapidPayAPI.Data
             return entity;
         }
 
-        public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> expression)
+        public async Task<IEnumerable<TEntity>> FindAll(Expression<Func<TEntity, bool>> expression)
         {
             return await context.Set<TEntity>().Where(expression).ToListAsync();
+        }
+
+        public async Task<TEntity> Find(Expression<Func<TEntity, bool>> expression)
+        {
+            return await context.Set<TEntity>().FirstOrDefaultAsync(expression);
         }
 
     }

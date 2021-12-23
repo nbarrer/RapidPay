@@ -29,13 +29,13 @@ namespace RappidPay.Controllers
             {
                 return StatusCode(500);
             }
-            return Ok(201);
+            return Ok(card);
         }
 
         [HttpGet("getbalance")]
-        public IActionResult GetBalance(string cardNumber)
+        public async Task<IActionResult> GetBalance(string cardNumber)
         {
-            var balance = _cardService.GetBalance(cardNumber);
+            var balance = await _cardService.GetBalance(cardNumber);
             if (balance == null)
             {
                 return StatusCode(501, "Error getting balance");
@@ -45,15 +45,28 @@ namespace RappidPay.Controllers
         }
 
         [HttpGet("paycard")]
-        public IActionResult Pay(string cardNumber, double amount)
+        public async Task<IActionResult> Pay(string cardNumber, double amount)
         {
             var fee = _paymeentFeeService.CalculateFee();
             var total = amount + (amount * fee);
-            var card = _cardService.Pay(cardNumber, total);
+            var card = await _cardService.Pay(cardNumber, total);
 
             if(card == null)
             {
                 return StatusCode(500);
+            }
+
+            return Ok(card);
+        }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete(string cardNumber)
+        {
+            var card = await _cardService.Delete(cardNumber);
+
+            if (card == null)
+            {
+                return NotFound(card);
             }
 
             return Ok(card);

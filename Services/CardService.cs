@@ -34,7 +34,7 @@ namespace RapidPayAPI.Services
             try
             {
                 //The card number is already assign to a card
-                if (_repository.FindByCardNumber(newCard.CardNumber) != null)
+                if (await _repository.FindByCardNumber(newCard.CardNumber) != null)
                 {
                     _logger.LogWarning($"The card {newCard.CardNumber} is already assign on system.");
                     return null;
@@ -60,22 +60,36 @@ namespace RapidPayAPI.Services
             }
         }
 
-        public bool Delete(string cardNumber)
+        public async Task<Card> Delete(string cardNumber)
         {
-            throw new NotImplementedException();
-        }
-
-        public double? GetBalance(string cardNumber)
-        {
-            if (_repository.FindByCardNumber(cardNumber) == null)
-            {
-                _logger.LogWarning($"The card {cardNumber} don't exists on system");
-                return null;
-            }
-
             try
             {
-                return _repository.FindByCardNumber(cardNumber).Balance;
+                var card = await _repository.Find(x => x.CardNumber == cardNumber);
+                var deletedCard = await _repository.Delete(card.Id);
+                _logger.LogInformation($"The card {cardNumber} was deleted on system");
+
+                return deletedCard;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Deleting Card on CardService: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<double?> GetBalance(string cardNumber)
+        {
+            try
+            {
+                var card = await _repository.Find(x => x.CardNumber == cardNumber);
+                if (card == null)
+                {
+                    _logger.LogWarning($"The card {cardNumber} don't exists on system");
+                    return null;
+                }
+
+                return card.Balance;
             }
             catch (Exception ex)
             {
@@ -86,11 +100,23 @@ namespace RapidPayAPI.Services
 
         public async Task<Card> Pay(string cardNumber, double amount)
         {
-
             try
             {
-                Card card = _repository.FindByCardNumber(cardNumber);
-                card.Balance = card.Balance - amount;
+                var card = await _repository.FindByCardNumber(cardNumber);
+
+                if(card == null)
+                {
+                    return null;
+                }
+
+                var total = card.Balance - amount;
+                if (total < 0)
+                {
+                    _logger.LogWarning($"The Payment cannot be processed. Please check your balance.");
+                    return null;
+                }
+
+                card.Balance = total;
                 var updatedCard = await _repository.Update(card);
                 _logger.LogInformation($"Payment to card: {cardNumber} with amount {amount}");
 

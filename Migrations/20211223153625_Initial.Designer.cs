@@ -9,7 +9,7 @@ using RapidPayAPI.Data;
 namespace RapidPayAPI.Migrations
 {
     [DbContext(typeof(RapidPayContext))]
-    [Migration("20211223030251_Initial")]
+    [Migration("20211223153625_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

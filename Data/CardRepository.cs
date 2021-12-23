@@ -1,5 +1,10 @@
-﻿using RapidPayAPI.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using RapidPayAPI.Entities;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace RapidPayAPI.Data
 {
@@ -11,9 +16,9 @@ namespace RapidPayAPI.Data
             _context = context;
         }
 
-        public Card FindByCardNumber(string cardNumber)
+        public async Task<Card> FindByCardNumber(string cardnumber)
         {
-            return _context.Set<Card>().FirstOrDefault(x => x.CardNumber == cardNumber);
+            return await _context.Set<Card>().FirstOrDefaultAsync(x => x.CardNumber == cardnumber);
         }
     }
 }
