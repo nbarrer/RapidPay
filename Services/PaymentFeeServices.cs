@@ -7,7 +7,6 @@ namespace RapidPayAPI.Services
 {
     public class PaymentFeeServices : IPaymentFeeService
     {
-        private readonly IConfiguration _configuration;
 
         public TimeSpan LastUpdated { get; set; }
         private double Fee { get; set; }
@@ -15,10 +14,7 @@ namespace RapidPayAPI.Services
         public PaymentFeeServices()
         {
         }
-        //public PaymentFeeServices(IConfiguration configuration)
-        //{
-        //    _configuration = configuration;
-        //}
+
         public double CalculateFee()
         {
             Random rand = new Random();
@@ -32,10 +28,9 @@ namespace RapidPayAPI.Services
             }
 
             //Changes fee every hour
-            //int interval = 0;
-            //int.TryParse(_configuration["AppSettings:UFEUpdateInterval"], out interval);
             if (DateTime.Now.Subtract(LastUpdated).Hour > 1)
             {
+                LastUpdated = DateTime.Now.TimeOfDay;
                 UFE = rand.NextDouble(0, 2, 2);
             }
             //Update fee value

@@ -48,6 +48,7 @@ namespace RappidPay.Controllers
         public async Task<IActionResult> Pay(string cardNumber, double amount)
         {
             var fee = _paymeentFeeService.CalculateFee();
+            // The total will be the sum plus fee, Is not clear how to apply the payment total.
             var total = amount + (amount * fee);
             var card = await _cardService.Pay(cardNumber, total);
 
